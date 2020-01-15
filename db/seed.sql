@@ -100,7 +100,10 @@ INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES ("Jack
 INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES ("Jack", "Money", 23, 17); -- 19
 INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES ("Jane", "Bologna", 24, 1); -- 20 
 
-SELECT * FROM employees WHERE manager_id IS NULL;
+SELECT * FROM employees; -- WHERE manager_id IS NULL;
 
+SELECT * FROM departments;
+SELECT * FROM roles;
+DELETE FROM departments WHERE id > 6;
 
 
