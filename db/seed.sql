@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS departments (
 CREATE TABLE IF NOT EXISTS `roles` (
     id INT NOT NULL AUTO_INCREMENT,
     title VARCHAR(30) NOT NULL,
-    salary DECIMAL(10,4) NOT NULL,
+    salary DECIMAL(10,2) NOT NULL,
     department_id INT,
     PRIMARY KEY (id),
     FOREIGN KEY (department_id) REFERENCES departments(id)
@@ -104,6 +104,3 @@ SELECT * FROM employees; -- WHERE manager_id IS NULL;
 
 SELECT * FROM departments;
 SELECT * FROM roles;
-DELETE FROM departments WHERE id > 6;
-
-
