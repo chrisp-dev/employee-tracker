@@ -1,9 +1,6 @@
 const inq = require('inquirer');
 const mysql = require('mysql');
 const log = require('console.table');
-const Employee = require('./lib/Employee');
-const Department = require('./lib/Department');
-const Role = require('./lib/Role');
 let DEPARTMENTS = [];
 let ROLES = [];
 let MANAGERS = [];
@@ -29,7 +26,47 @@ async function connect() {
         });
     }
 }
+class Department {
+    constructor(name) {
+        this.name = name;
+    }
 
+    async save() {
+        await connection.query('INSERT INTO departments (name) VALUES (?)',
+            [this.name], function (err, data) {
+                if (err) throw err;
+            });
+    }
+}
+class Employee {
+    constructor(first_name, last_name, role_id, manager_id) {
+        this.first_name = first_name;
+        this.last_name = last_name;
+        this.role_id = role_id;
+        this.manager_id = manager_id;
+    }
+
+    async save() {
+        await connection.query('INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)',
+            [this.first_name, this.last_name, this.role_id, this.manager_id], function (err) {
+                if (err) throw err;
+            });
+    }
+}
+class Role {
+    constructor(title, salary, department_id) {
+        this.title = title;
+        this.salary = salary;
+        this.department_id = department_id;
+    }
+
+    async save() {
+        await connection.query('INSERT INTO roles (title, salary, department_id) VALUES (?,?,?)',
+            [this.title, this.salary, this.department_id], function (err) {
+                if (err) throw err;
+            });
+    }
+}
 /**
  * ask
  * @description Initial question prompt for the user
@@ -233,7 +270,7 @@ async function askUpdateDepartment() {
  * Prints the Role list
  */
 async function askUpdateRole() {
-    await inq.prompt({
+    await inq.prompt([{
         type: 'list',
         name: 'name',
         choices: ROLES.map(role => role.title),
@@ -242,11 +279,11 @@ async function askUpdateRole() {
         type: 'input',
         name: 'new_title',
         message: 'What would you like to rename the role to?'
-    }).then(dept => {
-        const dep_id = DEPARTMENTS.filter(dep => dept.name === dep.name)[0].id;
-        connection.query('UPDATE departments SET name = ? WHERE id = ?', [dept.new_name, dep_id], function (err, data) {
+    }]).then(selection => {
+        const role_id = ROLES.filter(role => role.title === selection.name)[0].id;
+        connection.query('UPDATE roles SET title = ? WHERE id = ?', [selection.new_title, role_id], function (err, data) {
             if (err) throw err;
-            console.table(data);
+            getRoles(console.table);
         });
     });
 }
@@ -295,9 +332,9 @@ async function doTask(task) {
             return getDepts(console.table);
         case "View Roles":
             getRoles(console.table);
-        case "List Employees by Role":
-            console.log("List Employees by Role");
             break;
+        case "Update Employee Roles":
+            return askUpdateRole();
         case "List Managers":
             console.table(MANAGERS);
             break;
